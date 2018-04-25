@@ -37,12 +37,32 @@ public class DisplayImagePoll extends Application {
     private Iterator<String> imageIterator;
     private AtomicReference<ImagePattern> img_pattern;
     private String BLACK_SCREEN_NAME = "Black";
+    private String logPath;
+    private static String CFG_PATH;
+
+    static void setResourcesPaths(String cfgPath) {
+        CFG_PATH = cfgPath;
+    }
+
+    private void createFileIfNotExists(String logPath){
+        File f = new File(logPath);
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void loadConfigurationData(){
         Properties props = new Properties();
         try {
-            props.load(new FileInputStream(new File("resources\\input.cfg")));
-            IMAGES_PATH = props.getProperty("IMAGES_PATH", "");
+            props.load(new FileInputStream(new File(CFG_PATH)));
+
+            IMAGES_PATH = props.getProperty("IMAGES_PATH", "") + "\\";
+            logPath = props.getProperty("LOG_PATH", "") + "\\log.txt";
+            createFileIfNotExists(logPath);
             int first_img_display_dur = Integer.valueOf(props.getProperty("FIRST_IMG_DISPLAY_DUR", "1"));
             int first_black_background = first_img_display_dur
                     + Integer.valueOf(props.getProperty("FIRST_BLACK_BACKGROUND", "1"));
@@ -83,15 +103,14 @@ public class DisplayImagePoll extends Application {
 
 
     private String getDate(){
-        Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat ("hh:mm:ss");
-        return ft.format(dNow);
+        return ft.format(new Date());
     }
 
 
     private void writeToFile(String img_name, String date){
         try {
-            Path destFile = Paths.get("resources\\log.txt");
+            Path destFile = Paths.get(logPath);
 
             Files.write(destFile, Collections.singleton(img_name), Charset.forName("UTF-8"),
                     StandardOpenOption.APPEND);
@@ -106,7 +125,6 @@ public class DisplayImagePoll extends Application {
     private void switchImage(Iterator<String> imageIterator, ImagePollClient client, Scene scene){
         try {
             String img_name = imageIterator.next();
-            System.out.println(img_name);
             img_pattern.set(new ImagePattern(new Image(new File(img_name).toURI().toString())));
             scene.setFill(img_pattern.get());
             writeToFile(img_name, getDate());
@@ -116,8 +134,8 @@ public class DisplayImagePoll extends Application {
         }
     }
 
-    private ImagePollClient runGRPCClient(){
-        return new ImagePollClient("localhost", 50051);
+    private ImagePollClient runGRPCClient(String IPAddress, int portNr){
+        return new ImagePollClient(IPAddress, portNr);
     }
 
 
@@ -144,7 +162,7 @@ public class DisplayImagePoll extends Application {
     }
 
 
-    private void runImageAnimation(ImagePollClient grpcClient, Scene scene){
+    private void runImagesAnimation(ImagePollClient grpcClient, Scene scene){
         Timeline timelineShow = new Timeline(
                 new KeyFrame(displayDur[0], e -> switchImage(imageIterator, grpcClient, scene)),
                 new KeyFrame(blackDur[0], e -> {
@@ -184,9 +202,9 @@ public class DisplayImagePoll extends Application {
         scene.setFill(Color.BLACK);
         imageIterator = images.iterator();
         Collections.shuffle(images);
-        ImagePollClient grpcClient = runGRPCClient();
+        ImagePollClient grpcClient = runGRPCClient("localhost", 50051);
 
-        runImageAnimation(grpcClient, scene);
+        runImagesAnimation(grpcClient, scene);
         stage.setFullScreen(true);
         stage.setScene(scene);
         stage.show();
@@ -194,6 +212,10 @@ public class DisplayImagePoll extends Application {
 
 
     public static void main(String[] args) {
+        String cfgPath = null;
+        if(args.length>0)
+            cfgPath = args[0];
+        DisplayImagePoll.setResourcesPaths(cfgPath);
         launch(args);
     }
 }
