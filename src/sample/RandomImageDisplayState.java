@@ -8,6 +8,7 @@ class RandomImageDisplayState implements ImageDisplayState{
     private static final RandomImageDisplayState IMAGE_STATE = new RandomImageDisplayState(GrpcClient.getInstance());
     private GrpcClient grpcClient;
 
+
     private RandomImageDisplayState(GrpcClient grpcClient){
         this.grpcClient = grpcClient;
     }
@@ -20,18 +21,22 @@ class RandomImageDisplayState implements ImageDisplayState{
     @Override
     public void switchImage(DisplayImagePoll imagePollApp) {
         while (true) {
-            try {
                 String img_name = imagePollApp.imageIterator.next();
-                imagePollApp.img_pattern.set(new ImagePattern(
-                        new Image(new File(img_name).toURI().toString())));
-                imagePollApp.getJavaFxScene().setFill(imagePollApp.img_pattern.get());
-                imagePollApp.writeToFile(img_name, imagePollApp.getDate());
-                grpcClient.sendImageDataViaProtobuffers(img_name);
-                imagePollApp.setImageState(BlackImageState.getBlackState());
-                break;
-            } catch (IllegalArgumentException | NullPointerException e) {
-                System.out.println("Unappropriated path to image");
-            }
+                File f = new File(img_name);
+                if(f.exists()) {
+                    imagePollApp.img_pattern.set(new ImagePattern(
+                            new Image(f.toURI().toString())));
+                    imagePollApp.getJavaFxScene().setFill(imagePollApp.img_pattern.get());
+                    imagePollApp.writeToFile(img_name, imagePollApp.getDate());
+                    grpcClient.sendImageDataViaProtobuffers(img_name);
+                    imagePollApp.setImageState(BlackImageState.getBlackState());
+                    break;
+                }
         }
+    }
+
+    @Override
+    public String getState() {
+        return "Image";
     }
 }

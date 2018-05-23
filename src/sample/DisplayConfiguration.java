@@ -30,15 +30,18 @@ public class DisplayConfiguration {
 
             int first_img_display_dur = Integer.valueOf(props.getProperty("FIRST_IMG_DISPLAY_DUR", "1"));
             int first_black_background = first_img_display_dur
-                    + Integer.valueOf(props.getProperty("FIRST_BLACK_BACKGROUND", "1"));
+                    + Integer.valueOf(props.getProperty("FIRST_BLACK_BACKGROUND_DUR", "1"));
+
             int second_img_display_dur = first_black_background
                     + Integer.valueOf(props.getProperty("SECOND_IMG_DISPLAY_DUR", "1"));
             int second_black_background = second_img_display_dur
-                    + Integer.valueOf(props.getProperty("SECOND_BLACK_BACKGROUND", "1"));
+                    + Integer.valueOf(props.getProperty("SECOND_BLACK_BACKGROUND_DUR", "1"));
+
             int third_img_display_dur  = second_black_background
                     + Integer.valueOf(props.getProperty("THIRD_IMG_DISPLAY_DUR", "1"));
             int third_black_background = third_img_display_dur
-                    + Integer.valueOf(props.getProperty("THIRD_BLACK_BACKGROUND", "1"));
+                    + Integer.valueOf(props.getProperty("THIRD_BLACK_BACKGROUND_DUR", "1"));
+
             displayDur[0] = Duration.seconds(first_img_display_dur);
             displayDur[1] = Duration.seconds(second_img_display_dur);
             displayDur[2] = Duration.seconds(third_img_display_dur);

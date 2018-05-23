@@ -6,6 +6,7 @@ class BlackImageState implements ImageDisplayState{
     private static final BlackImageState BLACK_STATE = new BlackImageState(GrpcClient.getInstance());
     private GrpcClient grpcClient;
 
+
     private BlackImageState(GrpcClient grpcClient){
         this.grpcClient = grpcClient;
     }
@@ -21,5 +22,10 @@ class BlackImageState implements ImageDisplayState{
         imagePollApp.getJavaFxScene().setFill(Color.BLACK);
         grpcClient.sendImageDataViaProtobuffers(DisplayConfiguration.BLACK_SCREEN_NAME);
         imagePollApp.setImageState(RandomImageDisplayState.getImageState());
+    }
+
+    @Override
+    public String getState() {
+        return "Black";
     }
 }

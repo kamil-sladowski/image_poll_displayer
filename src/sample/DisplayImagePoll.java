@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static java.lang.Thread.sleep;
+
 
 public class DisplayImagePoll extends Application {
     private final Map<String, Integer> IMAGE_CATEGORY = Map.of(
@@ -46,22 +48,21 @@ public class DisplayImagePoll extends Application {
 
 
     private void runImagesAnimation(){
-        final Integer[] i = {0};
         Duration[] displayDur = DisplayConfiguration.getDisplayImagesDuration();
         Duration[] blackDur = DisplayConfiguration.getDisplayBlackImagesDuration();
 
+        imageState.switchImage(this);
         Timeline timelineShow = new Timeline(
-            new KeyFrame(displayDur[i[0]], e -> imageState.switchImage(this)),
-                new KeyFrame(
-                    blackDur[i[0]], e -> {
-                    imageState.switchImage(this);
-                    i[0]++;
-                    })
+            new KeyFrame(displayDur[0], e -> imageState.switchImage(this)),
+            new KeyFrame(blackDur[0], e -> imageState.switchImage(this)),
+            new KeyFrame(displayDur[1], e -> imageState.switchImage(this)),
+            new KeyFrame(blackDur[1], e -> imageState.switchImage(this)),
+            new KeyFrame(displayDur[2], e -> imageState.switchImage(this)),
+            new KeyFrame(blackDur[2], e -> imageState.switchImage(this))
         );
 
-        timelineShow.setCycleCount(3);
+        timelineShow.setCycleCount(1);
         timelineShow.setOnFinished(event -> {
-            i[0] = 0;
             Collections.shuffle(images);
             imageIterator= images.iterator();
             timelineShow.playFromStart();
@@ -113,7 +114,7 @@ public class DisplayImagePoll extends Application {
             Files.write(destFile, Collections.singleton(date), Charset.forName("UTF-8"),
                     StandardOpenOption.APPEND);
         } catch (IOException e) {
-            System.out.println("Can not write to file");
+            System.out.println("Can not find file to log");
         }
     }
 
@@ -121,7 +122,7 @@ public class DisplayImagePoll extends Application {
     private void setFXScene(Stage stage){
         BorderPane pane = new BorderPane();
         scene = new Scene(pane);
-        scene.setFill(Color.BLACK);
+        scene.setFill(Color.GREEN);
         stage.setFullScreen(true);
         stage.setScene(scene);
     }
@@ -141,10 +142,9 @@ public class DisplayImagePoll extends Application {
     public void start(Stage stage) {
         DisplayConfiguration.loadDisplayConfiguration();
         createFileIfNotExists(DisplayConfiguration.LOG_PATH);
-        imageState = BlackImageState.getBlackState();
+        imageState = RandomImageDisplayState.getImageState();
         setImagesList();
         setFXScene(stage);
-
         runImagesAnimation();
         stage.show();
     }
