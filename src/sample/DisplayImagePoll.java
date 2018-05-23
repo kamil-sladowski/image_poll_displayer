@@ -21,8 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.lang.Thread.sleep;
-
 
 public class DisplayImagePoll extends Application {
     private final Map<String, Integer> IMAGE_CATEGORY = Map.of(
@@ -32,7 +30,6 @@ public class DisplayImagePoll extends Application {
     private List<String> images;
     private ImageDisplayState imageState;
     private Scene scene;
-
     public Iterator<String> imageIterator;
     public AtomicReference<ImagePattern> img_pattern;
 
@@ -123,6 +120,7 @@ public class DisplayImagePoll extends Application {
         BorderPane pane = new BorderPane();
         scene = new Scene(pane);
         scene.setFill(Color.GREEN);
+        stage.setFullScreenExitHint("");
         stage.setFullScreen(true);
         stage.setScene(scene);
     }
