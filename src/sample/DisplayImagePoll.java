@@ -47,24 +47,30 @@ public class DisplayImagePoll extends Application {
     private void runImagesAnimation(){
         Duration[] displayDur = DisplayConfiguration.getDisplayImagesDuration();
         Duration[] blackDur = DisplayConfiguration.getDisplayBlackImagesDuration();
+        Duration initialDelay = DisplayConfiguration.getInitialDelay();
+
+        Timeline t1 = new Timeline(
+                new KeyFrame(initialDelay, e -> imageState.switchImage(this)),
+                new KeyFrame(Duration.ZERO));
+        t1.play();
 
         imageState.switchImage(this);
-        Timeline timelineShow = new Timeline(
+        Timeline imagesTimeline = new Timeline(
             new KeyFrame(displayDur[0], e -> imageState.switchImage(this)),
             new KeyFrame(blackDur[0], e -> imageState.switchImage(this)),
-            new KeyFrame(displayDur[1], e -> imageState.switchImage(this)),
+                new KeyFrame(displayDur[1], e -> imageState.switchImage(this)),
             new KeyFrame(blackDur[1], e -> imageState.switchImage(this)),
             new KeyFrame(displayDur[2], e -> imageState.switchImage(this)),
             new KeyFrame(blackDur[2], e -> imageState.switchImage(this))
         );
 
-        timelineShow.setCycleCount(1);
-        timelineShow.setOnFinished(event -> {
+        imagesTimeline.setCycleCount(1);
+        imagesTimeline.setOnFinished(event -> {
             Collections.shuffle(images);
             imageIterator= images.iterator();
-            timelineShow.playFromStart();
+            imagesTimeline.playFromStart();
         });
-        timelineShow.play();
+        imagesTimeline.play();
     }
 
 
@@ -140,7 +146,7 @@ public class DisplayImagePoll extends Application {
     public void start(Stage stage) {
         DisplayConfiguration.loadDisplayConfiguration();
         createFileIfNotExists(DisplayConfiguration.LOG_PATH);
-        imageState = RandomImageDisplayState.getImageState();
+        imageState = BlackImageState.getBlackState();
         setImagesList();
         setFXScene(stage);
         runImagesAnimation();

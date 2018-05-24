@@ -15,6 +15,7 @@ public class DisplayConfiguration {
     public static String LOG_PATH;
     private static Duration[] displayDur = new Duration[3];
     private static Duration[] blackDur = new Duration[3];
+    private static Duration initialDelay;
 
     static void setResourcesPaths(String cfgPath) {
         DisplayConfiguration.cfgPath = cfgPath;
@@ -28,7 +29,10 @@ public class DisplayConfiguration {
             IMAGES_PATH = props.getProperty("IMAGES_PATH", "") + "\\";
             LOG_PATH = props.getProperty("LOG_PATH", "") + "\\log.txt";
 
-            int first_img_display_dur = Integer.valueOf(props.getProperty("FIRST_IMG_DISPLAY_DUR", "1"));
+
+            int initial_delay = Integer.valueOf(props.getProperty("INITIAL_DELAY", "1"));
+
+            int first_img_display_dur = initial_delay + Integer.valueOf(props.getProperty("FIRST_IMG_DISPLAY_DUR", "1"));
             int first_black_background = first_img_display_dur
                     + Integer.valueOf(props.getProperty("FIRST_BLACK_BACKGROUND_DUR", "1"));
 
@@ -42,6 +46,7 @@ public class DisplayConfiguration {
             int third_black_background = third_img_display_dur
                     + Integer.valueOf(props.getProperty("THIRD_BLACK_BACKGROUND_DUR", "1"));
 
+            initialDelay = Duration.seconds(initial_delay);
             displayDur[0] = Duration.seconds(first_img_display_dur);
             displayDur[1] = Duration.seconds(second_img_display_dur);
             displayDur[2] = Duration.seconds(third_img_display_dur);
@@ -56,7 +61,15 @@ public class DisplayConfiguration {
     public static Duration[] getDisplayImagesDuration(){
         return displayDur;
     }
+
+
     public static Duration[] getDisplayBlackImagesDuration(){
         return blackDur;
     }
+
+
+    public static Duration getInitialDelay(){
+        return initialDelay;
+    }
 }
+
