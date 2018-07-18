@@ -3,6 +3,10 @@ package sample;
 import io.grpc.examples.imageviewer.ImageDataSample;
 import io.grpc.examples.imageviewer.ImagePollClient;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
 class GrpcClient extends ImagePollClient{
     private static final GrpcClient GRPC_CLIENT = new GrpcClient("localhost", 50051);;
 
@@ -26,16 +30,23 @@ class GrpcClient extends ImagePollClient{
         }
         else {
             String img_short_name = img_name.substring(prefixLen, img_name.length());
-            if (img_short_name.contains("N"))
-                neutral = true;
-            else if (img_short_name.contains("P"))
-                positive = true;
-            else if (img_short_name.contains("Sn") ||
-                    img_short_name.contains("Sp") ||
-                    img_short_name.contains("H") ||
-                    img_short_name.contains("A"))
-                negative = true;
+            Set<String> positive_category = DisplayConfiguration.getPositiveImagesCategory().keySet();
+            Set<String>  neutral_category= DisplayConfiguration.getNeutralImagesCategory().keySet();
+            Set<String>  negative_category = DisplayConfiguration.getNegativeImagesCategory().keySet();
+            for (String s: neutral_category )
+                if (img_short_name.contains(s))
+                    neutral = true;
+            for (String s: positive_category )
+                if (img_short_name.contains(s))
+                    positive = true;
+            for (String s: negative_category )
+                if (img_short_name.contains(s))
+                    negative = true;
         }
+        System.out.println(")))");
+        System.out.println(negative);
+        System.out.println(neutral);
+        System.out.println(positive);
         //        getDate()
         GRPC_CLIENT.packImageData(new ImageDataSample(img_name, negative, neutral, positive, black));
     }

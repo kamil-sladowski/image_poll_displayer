@@ -23,10 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DisplayImagePoll extends Application {
-    private final Map<String, Integer> IMAGE_CATEGORY = Map.of(
-            "A",100,"H",100,"N",100,"P",
-            100,"Sn",100, "Sp",100);
-    private final Integer img_num = 600;
     private List<String> images;
     private ImageDisplayState imageState;
     private Scene scene;
@@ -87,15 +83,23 @@ public class DisplayImagePoll extends Application {
 
 
     private String[] getImagesPaths(){
-        String[] images_locks = new String[img_num];
+        ArrayList<HashMap<String, Integer>> myList = new ArrayList<>();
         int i =0;
-        for(Map.Entry<String, Integer> entry : IMAGE_CATEGORY.entrySet()){
-            int max_nr = entry.getValue();
-            String key = entry.getKey();
-            for(int j =1; j<= max_nr; j++) {
-                String randomNum = String.format("%03d", j);
-                images_locks[i] = DisplayConfiguration.IMAGES_PATH + key + "\\" + key + randomNum + ".bmp";
-                i++;
+        myList.add(DisplayConfiguration.getPositiveImagesCategory());
+        myList.add(DisplayConfiguration.getNeutralImagesCategory());
+        myList.add(DisplayConfiguration.getNegativeImagesCategory());
+        String[] images_locks = new String[DisplayConfiguration.getNumberOfAllImages()];
+        System.out.println(DisplayConfiguration.getNumberOfAllImages());
+
+        for (HashMap<String, Integer> category : myList) {
+            for (Map.Entry<String, Integer> entry : category.entrySet()) {
+                int max_nr = entry.getValue();
+                String key = entry.getKey();
+                for (int j = 1; j <= max_nr; j++) {
+                    String randomNum = String.format("%03d", j);
+                    images_locks[i] = DisplayConfiguration.IMAGES_PATH + key + "\\" + key + randomNum + ".bmp";
+                    i++;
+                }
             }
         }
         return images_locks;
