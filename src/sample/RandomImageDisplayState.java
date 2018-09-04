@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import java.io.File;
 
-class RandomImageDisplayState implements ImageDisplayState{
+class RandomImageDisplayState implements DisplayState{
     private static final RandomImageDisplayState IMAGE_STATE = new RandomImageDisplayState(GrpcClient.getInstance());
     private GrpcClient grpcClient;
 
