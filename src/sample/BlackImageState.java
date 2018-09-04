@@ -2,7 +2,7 @@ package sample;
 
 import javafx.scene.paint.Color;
 
-class BlackImageState implements ImageDisplayState{
+class BlackImageState implements DisplayState{
     private static final BlackImageState BLACK_STATE = new BlackImageState(GrpcClient.getInstance());
     private GrpcClient grpcClient;
 
