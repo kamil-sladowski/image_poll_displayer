@@ -1,6 +1,6 @@
 package sample;
 
-interface ImageDisplayState{
+interface DisplayState{
     void switchImage(DisplayImagePoll imagePollApp);
     String getState();
 }
